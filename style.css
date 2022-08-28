@@ -4,7 +4,7 @@ body {
   font-family: system-ui;
   background: linear-gradient(to bottom,
     $brandColor,
-    darken($brandColor, 15%)
+    darken($brandColor, 65%)
   );
   color: white;
   height: 100vh;
