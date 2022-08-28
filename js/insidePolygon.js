@@ -1,3 +1,5 @@
+//Função que retorna se um ponto (pointx,pointy) está, ou não, no polígono poly
+//A variável inside que armazena esta informação
 function insidePoly(poly, pointx, pointy) {
     var i, j;
     var inside = false;
