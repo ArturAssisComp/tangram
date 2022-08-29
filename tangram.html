@@ -24,6 +24,16 @@
         document.body.appendChild( renderer.domElement );
         <!---->
 
+        <!-- Creating background -->
+        const geometry_background = new THREE.BoxGeometry( 200, 250, 0 );
+        const material_black = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+            
+        const background = new THREE.Mesh( geometry_background, material_black );
+
+        scene.add( background );
+
+        background.position.set(100, 100, -1)
+        <!---->
 
         <!-- Creating scene objects -->
         const geometry = new THREE.BoxGeometry( 50, 50, 0 );
