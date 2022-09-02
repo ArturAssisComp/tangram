@@ -208,6 +208,7 @@
             scene.add(cursor)
 
 
+
             var raycaster = new THREE.Raycaster();
             var mouse = new THREE.Vector2(-1000,-1000);
             var nmouse = new THREE.Vector2(-1000,-1000);
@@ -322,6 +323,20 @@
                 }
             }
 
+            function onMouseWheel( event ) {
+                event.preventDefault();
+                updateCursor()
+
+                switch(state)
+                {
+
+                  case 2: // drag mode
+                    hover.rotateZ(event.deltaY / 2500);
+                    break;
+
+                }
+            }
+
 
 
             function animate() {
@@ -335,6 +350,8 @@
             window.addEventListener( 'mousemove', onMouseMove, false );
             window.addEventListener( 'mouseup', onMouseUp, false );
             window.addEventListener( 'mousedown', onMouseDown, false );
+            window.addEventListener('wheel', onMouseWheel, false);
+
             animate();
 
 		</script>
