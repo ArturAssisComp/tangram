@@ -97,7 +97,7 @@
 
             scene.add( B );
 
-            B.position.set(initial_position.x - offset, initial_position.y + 50, -1)
+            B.position.set(initial_position.x - offset, initial_position.y + 50, -2)
 
             /*Object C*/
             x_mean = 11*L/12;
@@ -114,7 +114,7 @@
 
             scene.add( C );
 
-            C.position.set(initial_position.x - offset, initial_position.y + 50, -1)
+            C.position.set(initial_position.x - offset, initial_position.y + 50, -3)
 
             /*Object D*/
             x_mean = 3*L/4;
@@ -135,7 +135,7 @@
 
             scene.add( D );
 
-            D.position.set(initial_position.x - offset, initial_position.y + 50, -1)
+            D.position.set(initial_position.x - offset, initial_position.y + 50, -4)
 
             /*Object E*/
             x_mean = L/2;
@@ -152,7 +152,7 @@
 
             scene.add( E );
 
-            E.position.set(initial_position.x - offset, initial_position.y + 50, -1)
+            E.position.set(initial_position.x - offset, initial_position.y + 50, -5)
 
             /*Object F*/
             x_mean = 3*L/8;
@@ -174,7 +174,7 @@
 
             scene.add( F );
 
-            F.position.set(initial_position.x - offset, initial_position.y + 50, -1)
+            F.position.set(initial_position.x - offset, initial_position.y + 50, -6)
 
             /*Object G*/
             x_mean = 5*L/6;
@@ -193,7 +193,7 @@
 
             scene.add( G );
 
-            G.position.set(initial_position.x - offset, initial_position.y + 50, -1)
+            G.position.set(initial_position.x - offset, initial_position.y + 50, -7)
 
 
             //-------
@@ -213,11 +213,20 @@
             var mouse = new THREE.Vector2(-1000,-1000);
             var nmouse = new THREE.Vector2(-1000,-1000);
 
-            var state = 0 
 
             var hover=undefined
 
             var pan= new THREE.Vector2(0,0)
+
+            //Constants:
+            const state = {
+            FREE_CURSOR: 0,
+            HOVER:       1,
+            DRAG_MODE:   2,
+            PAN_MODE:    3
+            };
+
+            let current_state=state.FREE_CURSOR; 
 
             //Function definitions 
             function updateCursor() {
@@ -241,35 +250,35 @@
 
                 updateCursor()
                 
-                switch(state)
+                switch(current_state)
                 {
-                  case 0: // free cursor
+                  case state.FREE_CURSOR: // free cursor
                     var intersects = raycaster.intersectObjects( mycontrols );
                     if (intersects.length>0)
                     {
-                      state=1;
+                      current_state=state.HOVER;
                       hover=intersects[0].object;
                       previous_material = hover.material
                       hover.material=highlighted
                     }
                     break;
                 
-                  case 1: // hover
+                  case state.HOVER: // hover
                     var intersects = raycaster.intersectObject( hover );
                     if (intersects.length==0)
                     {
                        hover.material=previous_material
-                       state=0
+                       current_state=state.FREE_CURSOR
                        hover=undefined
                     }
                     break;
 
-                  case 2: // drag mode
+                  case state.DRAG_MODE: // drag mode
                     hover.position.x = mouse.x -pan.x
                     hover.position.y = mouse.y -pan.y
                     break;
                     
-                  case 3: // pan mode
+                  case state.PAN_MODE: // pan mode
                     camera.position.x = pan.x - mouse.x
                     camera.position.y = pan.y - mouse.y
                     cursor.position.x = pan.x 
@@ -284,20 +293,20 @@
 
                 updateCursor()
                 
-                switch(state)
+                switch(current_state)
                 {
                 
-                  case 2: // drag mode
+                  case state.DRAG_MODE: // drag mode
                     hover.position.x = mouse.x - pan.x
                     hover.position.y = mouse.y - pan.y
-                    state=1
+                    current_state=state.HOVER
                     break;
                     
-                  case 3: // pan mode
+                  case state.PAN_MODE: // pan mode
                     cursor.position.x = pan.x 
                     cursor.position.y = pan.y
                     pan.set(mouse.x - pan.x, mouse.y - pan.y)
-                    state=0;
+                    current_state=state.FREE_CURSOR;
                     break;
                 }
                 
@@ -309,15 +318,15 @@
 
                 updateCursor()
 
-                switch(state)
+                switch(current_state)
                 {
-                  case 0: // free cursor
+                  case state.FREE_CURSOR: // free cursor
                     pan.set(mouse.x - pan.x, mouse.y - pan.y)
-                    state=3
+                    current_state=state.PAN_MODE;
                     break;
                 
-                  case 1: // hover
-                    state = 2
+                  case state.HOVER: // hover
+                    current_state = state.DRAG_MODE;
                     break;
 
                 }
@@ -327,10 +336,10 @@
                 event.preventDefault();
                 updateCursor()
 
-                switch(state)
+                switch(current_state)
                 {
 
-                  case 2: // drag mode
+                  case state.DRAG_MODE: // drag mode
                     hover.rotateZ(event.deltaY / 2500);
                     break;
 
@@ -350,7 +359,7 @@
             window.addEventListener( 'mousemove', onMouseMove, false );
             window.addEventListener( 'mouseup', onMouseUp, false );
             window.addEventListener( 'mousedown', onMouseDown, false );
-            window.addEventListener('wheel', onMouseWheel, false);
+            window.addEventListener( 'wheel', onMouseWheel, false );
 
             animate();
 
