@@ -353,6 +353,22 @@
                 renderer.render( scene, camera );
 
                 }
+
+
+
+            //This function returns the list of vertices of a geometry from a mesh.
+            function getVertices( mesh ) {
+                const position = mesh.geometry.getAttribute('position');
+                var vertices = [];
+                for ( let i = 0; i < position.count; i++ ) {
+                    var vertex = new THREE.Vector3();
+                    vertex.fromBufferAttribute( position, i ); 
+                    mesh.localToWorld(vertex);
+                    vertices.push(vertex)
+                }
+                return vertices
+            }
+
             //-------
 
             //Call the animation loop
