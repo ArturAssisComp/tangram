@@ -10,169 +10,358 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script>
-		
-        <!-- A scenario must have a scene, a camera, and a renderer -->
-        const scene = new THREE.Scene();
-        width=window.innerWidth;
-        height=window.innerHeight;
-        const camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, -1000, 1000 );
-        scene.add( camera );
+            //A scenario must have a scene, a camera, and a renderer 
+            const scene = new THREE.Scene();
+            width=window.innerWidth;
+            height=window.innerHeight;
+            const camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, -1000, 1000 );
+            scene.add( camera );
 
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        renderer.setClearColor(0xFFFFFF,1);
-        document.body.appendChild( renderer.domElement );
-        <!---->
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.setClearColor(0xFFFFFF,1);
+            document.body.appendChild( renderer.domElement );
+            //-------
+
+            //Materials and colors 
+            const highlighted               = new THREE.MeshBasicMaterial( { color: 0xfff000 } );
+            const material_red              = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+            const material_blue             = new THREE.MeshBasicMaterial( { color: 0x0000fff} );
+            const material_black            = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+            const material_green            = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+            const material_orange           = new THREE.MeshBasicMaterial( { color: 0xffa500} );
+            const material_yellow           = new THREE.MeshBasicMaterial( { color: 0xffff00} );
+            const material_light_blue       = new THREE.MeshBasicMaterial( { color: 0x00aafff} );
+            const material_ligth_blue_green = new THREE.MeshBasicMaterial( { color: 0x007777 } );
 
 
-        <!-- Creating scene objects -->
-        const geometry = new THREE.BoxGeometry( 50, 50, 0 );
-        const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-        const highlighted = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+            //-------
+
+            //Creating background 
+            const L = 500
+            const initial_position = new THREE.Vector2(100, -250);
             
-        const rectangle = new THREE.Mesh( geometry, material );
+            const geometry_background = new THREE.BufferGeometry();
+            // BufferGeometry is composed by multiple triangles.
+            var background_vertices = new Float32Array([
+                            0, 0, 0,
+                            L, 0, 0,
+                            L, L, 0,
 
-        scene.add( rectangle );
-
-        rectangle.position.set(100, 100, 0)
-        <!---->
-
-        var mycontrols=[rectangle] 
-
-        camera.position.z = 5;
-
-        var cursor= new THREE.Mesh( new THREE.SphereGeometry(10), 
-                                    new THREE.MeshBasicMaterial({color:0xdddddd}))
-        cursor.position.z=-900
-        scene.add(cursor)
-
-
-        var raycaster = new THREE.Raycaster();
-        var mouse = new THREE.Vector2(-1000,-1000);
-        var nmouse = new THREE.Vector2(-1000,-1000);
-
-        var state = 0 
-
-        var hover=undefined
-
-        var pan= new THREE.Vector2(0,0)
-
-        <!-- Function definitions -->
-        function updateCursor() {
-            // calculate mouse position in normalized device coordinates
-            // (-1 to +1) for both components
-            nmouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-            nmouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-            
-            mouse.x= event.clientX -width/2
-            mouse.y= -event.clientY + height/2
-            
-            cursor.position.x = mouse.x -pan.x
-            cursor.position.y = mouse.y -pan.y
-
-            raycaster.setFromCamera( nmouse, camera );
-
-        }
-
-        function onMouseMove( event ) {
-
-            updateCursor()
-            
-            switch(state)
-            {
-              case 0: // free cursor
-                var intersects = raycaster.intersectObjects( mycontrols );
-                if (intersects.length>0)
-                {
-                  state=1;
-                  hover=intersects[0].object;
-                  hover.material=highlighted
-                }
-                break;
-            
-              case 1: // hover
-                var intersects = raycaster.intersectObject( hover );
-                if (intersects.length==0)
-                {
-                   hover.material=material
-                   state=0
-                   hover=undefined
-                }
-                break;
-
-              case 2: // drag mode
-                hover.position.x = mouse.x -pan.x
-                hover.position.y = mouse.y -pan.y
-                break;
+                            L, L, 0,
+                            0, L, 0,
+                            0, 0, 0
+                        ]);
+            geometry_background.setAttribute('position', new THREE.BufferAttribute(background_vertices, 3));
                 
-              case 3: // pan mode
-                camera.position.x = pan.x - mouse.x
-                camera.position.y = pan.y - mouse.y
-                cursor.position.x = pan.x 
-                cursor.position.y = pan.y
-                break;
-            }
-            
-        }
+            const background = new THREE.Mesh( geometry_background, material_black );
 
+            scene.add( background );
 
-        function onMouseUp( event ) {
+            background.position.set(initial_position.x, initial_position.y, -10)
+            //-------
 
-            updateCursor()
-            
-            switch(state)
-            {
-            
-              case 2: // drag mode
-                hover.position.x = mouse.x - pan.x
-                hover.position.y = mouse.y - pan.y
-                state=1
-                break;
+            //Creating scene objects
+            const offset = 550
+            var x_mean;
+            var y_mean;
+            /*Object A*/
+            x_mean = L/6;
+            y_mean = L/2;;
+            var geometry_A = new THREE.BufferGeometry();
+            var vertices_A = new Float32Array([
+                            0 - x_mean,   0 - y_mean,   0,
+                            L/2 - x_mean, L/2 - y_mean, 0,
+                            0 - x_mean,   L - y_mean,   0
+                        ]);
+            geometry_A.setAttribute('position', new THREE.BufferAttribute(vertices_A, 3));
                 
-              case 3: // pan mode
-                cursor.position.x = pan.x 
-                cursor.position.y = pan.y
-                pan.set(mouse.x - pan.x, mouse.y - pan.y)
-                state=0;
-                break;
+            var A = new THREE.Mesh( geometry_A, material_ligth_blue_green);
+
+            scene.add( A );
+
+            A.position.set(initial_position.x - offset, initial_position.y + 50, -1)
+
+            /*Object B*/
+            x_mean = L/2;
+            y_mean = 5*L/6;;
+            var geometry_B = new THREE.BufferGeometry();
+            var vertices_B = new Float32Array([
+                            L/2 - x_mean, L/2 - y_mean, 0,
+                            L - x_mean,   L - y_mean,   0,
+                            0 - x_mean,   L - y_mean,   0
+                        ]);
+            geometry_B.setAttribute('position', new THREE.BufferAttribute(vertices_B, 3));
+                
+            var B = new THREE.Mesh( geometry_B, material_orange);
+
+            scene.add( B );
+
+            B.position.set(initial_position.x - offset, initial_position.y + 50, -2)
+
+            /*Object C*/
+            x_mean = 11*L/12;
+            y_mean = 3*L/4;
+            var geometry_C = new THREE.BufferGeometry();
+            var vertices_C = new Float32Array([
+                            3*L/4 - x_mean, 3*L/4 - y_mean, 0,
+                            L - x_mean,     L/2 - y_mean,   0,
+                            L - x_mean,     L - y_mean,     0
+                        ]);
+            geometry_C.setAttribute('position', new THREE.BufferAttribute(vertices_C, 3));
+                
+            var C = new THREE.Mesh( geometry_C, material_light_blue);
+
+            scene.add( C );
+
+            C.position.set(initial_position.x - offset, initial_position.y + 50, -3)
+
+            /*Object D*/
+            x_mean = 3*L/4;
+            y_mean = L/2;;
+            var geometry_D = new THREE.BufferGeometry();
+            var vertices_D = new Float32Array([
+                            L/2 - x_mean,     L/2 - y_mean,   0,
+                            3*L/4 - x_mean,   L/4 - y_mean,   0,
+                            L - x_mean,       L/2 - y_mean,   0,
+
+                            L - x_mean,     L/2 - y_mean,     0,
+                            3*L/4 - x_mean, 3*L/4 - y_mean,   0,
+                            L/2 - x_mean,   L/2 - y_mean,     0
+                        ]);
+            geometry_D.setAttribute('position', new THREE.BufferAttribute(vertices_D, 3));
+                
+            var D = new THREE.Mesh( geometry_D, material_red);
+
+            scene.add( D );
+
+            D.position.set(initial_position.x - offset, initial_position.y + 50, -4)
+
+            /*Object E*/
+            x_mean = L/2;
+            y_mean = L/3;;
+            var geometry_E = new THREE.BufferGeometry();
+            var vertices_E = new Float32Array([
+                            L/4 - x_mean,     L/4 - y_mean,   0,
+                            3*L/4 - x_mean,   L/4 - y_mean,   0,
+                            L/2 - x_mean,   L/2 - y_mean,     0
+                        ]);
+            geometry_E.setAttribute('position', new THREE.BufferAttribute(vertices_E, 3));
+                
+            var E = new THREE.Mesh( geometry_E, material_green);
+
+            scene.add( E );
+
+            E.position.set(initial_position.x - offset, initial_position.y + 50, -5)
+
+            /*Object F*/
+            x_mean = 3*L/8;
+            y_mean = L/8;;
+            var geometry_F = new THREE.BufferGeometry();
+            var vertices_F = new Float32Array([
+                            0 - x_mean,     0 - y_mean,   0,
+                            L/2 - x_mean,   0 - y_mean,   0,
+                            3*L/4 - x_mean, L/4 - y_mean, 0,
+
+                            3*L/4 - x_mean, L/4 - y_mean, 0,
+                            L/4 - x_mean,   L/4 - y_mean, 0,
+                            0 - x_mean,     0 - y_mean,   0
+
+                        ]);
+            geometry_F.setAttribute('position', new THREE.BufferAttribute(vertices_F, 3));
+                
+            var F = new THREE.Mesh( geometry_F, material_blue);
+
+            scene.add( F );
+
+            F.position.set(initial_position.x - offset, initial_position.y + 50, -6)
+
+            /*Object G*/
+            x_mean = 5*L/6;
+            y_mean = L/6;
+            var geometry_G = new THREE.BufferGeometry();
+            var vertices_G = new Float32Array([
+                            L/2 - x_mean, 0 - y_mean,   0,
+                            L - x_mean,   0 - y_mean,   0,
+                            L - x_mean,   L/2 - y_mean, 0
+
+
+                        ]);
+            geometry_G.setAttribute('position', new THREE.BufferAttribute(vertices_G, 3));
+                
+            var G = new THREE.Mesh( geometry_G, material_yellow);
+
+            scene.add( G );
+
+            G.position.set(initial_position.x - offset, initial_position.y + 50, -7)
+
+
+            //-------
+
+            var mycontrols=[A, B, C, D, E, F, G] 
+
+            camera.position.z = 5;
+
+            var cursor= new THREE.Mesh( new THREE.SphereGeometry(10), 
+                                        new THREE.MeshBasicMaterial({color:0xdddddd}))
+            cursor.position.z=-900
+            scene.add(cursor)
+
+
+
+            var raycaster = new THREE.Raycaster();
+            var mouse = new THREE.Vector2(-1000,-1000);
+            var nmouse = new THREE.Vector2(-1000,-1000);
+
+
+            var hover=undefined
+
+            var pan= new THREE.Vector2(0,0)
+
+            //Constants:
+            const state = {
+            FREE_CURSOR: 0,
+            HOVER:       1,
+            DRAG_MODE:   2,
+            PAN_MODE:    3
+            };
+
+            let current_state=state.FREE_CURSOR; 
+
+            //Function definitions 
+            function updateCursor() {
+                // calculate mouse position in normalized device coordinates
+                // (-1 to +1) for both components
+                nmouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+                nmouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+                
+                mouse.x= event.clientX -width/2
+                mouse.y= -event.clientY + height/2
+                
+                cursor.position.x = mouse.x -pan.x
+                cursor.position.y = mouse.y -pan.y
+
+                raycaster.setFromCamera( nmouse, camera );
+
             }
-            
-            
-            
-        }
 
-        function onMouseDown( event ) {
+            var previous_material
+            function onMouseMove( event ) {
 
-            updateCursor()
+                updateCursor()
+                
+                switch(current_state)
+                {
+                  case state.FREE_CURSOR: // free cursor
+                    var intersects = raycaster.intersectObjects( mycontrols );
+                    if (intersects.length>0)
+                    {
+                      current_state=state.HOVER;
+                      hover=intersects[0].object;
+                      previous_material = hover.material
+                      hover.material=highlighted
+                    }
+                    break;
+                
+                  case state.HOVER: // hover
+                    var intersects = raycaster.intersectObject( hover );
+                    if (intersects.length==0)
+                    {
+                       hover.material=previous_material
+                       current_state=state.FREE_CURSOR
+                       hover=undefined
+                    }
+                    break;
 
-            switch(state)
-            {
-              case 0: // free cursor
-                pan.set(mouse.x - pan.x, mouse.y - pan.y)
-                state=3
-                break;
-            
-              case 1: // hover
-                state = 2
-                break;
-
+                  case state.DRAG_MODE: // drag mode
+                    hover.position.x = mouse.x -pan.x
+                    hover.position.y = mouse.y -pan.y
+                    break;
+                    
+                  case state.PAN_MODE: // pan mode
+                    camera.position.x = pan.x - mouse.x
+                    camera.position.y = pan.y - mouse.y
+                    cursor.position.x = pan.x 
+                    cursor.position.y = pan.y
+                    break;
+                }
+                
             }
-        }
 
 
+            function onMouseUp( event ) {
 
-        function animate() {
-            requestAnimationFrame( animate );
-            renderer.render( scene, camera );
-
+                updateCursor()
+                
+                switch(current_state)
+                {
+                
+                  case state.DRAG_MODE: // drag mode
+                    hover.position.x = mouse.x - pan.x
+                    hover.position.y = mouse.y - pan.y
+                    current_state=state.HOVER
+                    break;
+                    
+                  case state.PAN_MODE: // pan mode
+                    cursor.position.x = pan.x 
+                    cursor.position.y = pan.y
+                    pan.set(mouse.x - pan.x, mouse.y - pan.y)
+                    current_state=state.FREE_CURSOR;
+                    break;
+                }
+                
+                
+                
             }
-        <!---->
 
-        <!-- Call the animation loop-->
-        window.addEventListener( 'mousemove', onMouseMove, false );
-        window.addEventListener( 'mouseup', onMouseUp, false );
-        window.addEventListener( 'mousedown', onMouseDown, false );
-        animate();
+            function onMouseDown( event ) {
+
+                updateCursor()
+
+                switch(current_state)
+                {
+                  case state.FREE_CURSOR: // free cursor
+                    pan.set(mouse.x - pan.x, mouse.y - pan.y)
+                    current_state=state.PAN_MODE;
+                    break;
+                
+                  case state.HOVER: // hover
+                    current_state = state.DRAG_MODE;
+                    break;
+
+                }
+            }
+
+            function onMouseWheel( event ) {
+                event.preventDefault();
+                updateCursor()
+
+                switch(current_state)
+                {
+
+                  case state.DRAG_MODE: // drag mode
+                    hover.rotateZ(event.deltaY / 2500);
+                    break;
+
+                }
+            }
+
+
+
+            function animate() {
+                requestAnimationFrame( animate );
+                renderer.render( scene, camera );
+
+                }
+            //-------
+
+            //Call the animation loop
+            window.addEventListener( 'mousemove', onMouseMove, false );
+            window.addEventListener( 'mouseup', onMouseUp, false );
+            window.addEventListener( 'mousedown', onMouseDown, false );
+            window.addEventListener( 'wheel', onMouseWheel, false );
+
+            animate();
 
 		</script>
 	</body>
