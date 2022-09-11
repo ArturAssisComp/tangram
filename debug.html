@@ -56,7 +56,7 @@
             geometry_background_A.name = "geometrybackground_A";
 
                 
-            var background_A = new THREE.Mesh( geometry_background_A, material_black );
+            var background_A = new THREE.Mesh( geometry_background_A, material_ligth_blue_green );
 
             scene.add( background_A );
 
@@ -75,7 +75,7 @@
             geometry_background_B.setAttribute('position', new THREE.BufferAttribute(vertices_background_B, 3));
             geometry_background_B.name = "geometrybackground_B";
                 
-            var background_B = new THREE.Mesh( geometry_background_B, material_black);
+            var background_B = new THREE.Mesh( geometry_background_B, material_orange);
 
             scene.add( background_B );
 
@@ -96,7 +96,7 @@
             geometry_background_C.setAttribute('position', new THREE.BufferAttribute(vertices_background_C, 3));
                 
             geometry_background_C.name = "geometrybackground_C";
-            var background_C = new THREE.Mesh( geometry_background_C, material_black);
+            var background_C = new THREE.Mesh( geometry_background_C, material_light_blue);
 
             scene.add( background_C );
 
@@ -116,7 +116,7 @@
             geometry_background_D.setAttribute('position', new THREE.BufferAttribute(vertices_background_D, 3));
                 
             geometry_background_D.name = "geometrybackground_D";
-            var background_D = new THREE.Mesh( geometry_background_D, material_black);
+            var background_D = new THREE.Mesh( geometry_background_D, material_red);
 
             scene.add( background_D );
 
@@ -136,7 +136,7 @@
             geometry_background_E.setAttribute('position', new THREE.BufferAttribute(vertices_background_E, 3));
             geometry_background_E.name = "geometrybackground_E";
                 
-            var background_E = new THREE.Mesh( geometry_background_E, material_black);
+            var background_E = new THREE.Mesh( geometry_background_E, material_green);
 
             scene.add( background_E );
 
@@ -157,7 +157,7 @@
             geometry_background_F.setAttribute('position', new THREE.BufferAttribute(vertices_background_F, 3));
             geometry_background_F.name = "geometrybackground_F";
                 
-            var background_F = new THREE.Mesh( geometry_background_F, material_black);
+            var background_F = new THREE.Mesh( geometry_background_F, material_blue);
 
             scene.add( background_F );
 
@@ -177,7 +177,7 @@
             geometry_background_G.setAttribute('position', new THREE.BufferAttribute(vertices_background_G, 3));
             geometry_background_G.name = "geometrybackground_G";
                 
-            var background_G = new THREE.Mesh( geometry_background_G, material_black);
+            var background_G = new THREE.Mesh( geometry_background_G, material_yellow);
 
             scene.add( background_G );
 
@@ -379,7 +379,7 @@
             var pan= new THREE.Vector2(0,0)
 
             const expectedTotalArea = L*L;
-            const winThreshold = 5e-2;
+            const winThreshold = 95e-2;
             var remainingArea = expectedTotalArea;
 
             //Constants:
